@@ -1,0 +1,26 @@
+name: Deploy Open-WebUI to CapRover
+
+on:
+  push:
+    branches:
+      - main # Or your primary deployment branch
+    # Optional: Trigger only if captain-definition or workflow changes
+    # paths:
+    #  - 'captain-definition'
+    #  - '.github/workflows/deploy-open-webui.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # This step ensures the captain-definition file is available
+
+      - name: Deploy to CapRover
+        uses: caprover/actions-caprover@v1.1.0 # Check for the latest version
+        with:
+          server: '${{ secrets.CAPROVER_SERVER }}'
+          app: '${{ secrets.CAPROVER_APP_NAME }}'
+          token: '${{ secrets.CAPROVER_APP_TOKEN }}'
+          # The action will use the captain-definition from the checked-out repository.

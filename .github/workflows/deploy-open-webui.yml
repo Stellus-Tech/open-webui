@@ -1,38 +1,26 @@
-name: Deploy to CapRover
+name: Deploy Open-WebUI to CapRover
 
 on:
   push:
     branches:
-      - main # Or your preferred deployment branch (e.g., master, prod)
+      - main # Or your primary deployment branch
+    # Optional: Trigger only if captain-definition or workflow changes
+    # paths:
+    #  - 'captain-definition'
+    #  - '.github/workflows/deploy-open-webui.yml'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # Use a Node.js version compatible with CapRover CLI
-
-      - name: Install CapRover CLI
-        run: npm install -g caprover
-
-      - name: Create deployment archive
-        # This creates a tarball of your project.
-        # Docker will use the .dockerignore file within this context.
-        # Exclusions here help reduce the archive size uploaded to CapRover.
-        run: tar -czvf source.tar.gz --exclude='./.git' --exclude='./node_modules' --exclude='./venv' --exclude='backend/data' --exclude='uploads' .
+        # This step ensures the captain-definition file is available
 
       - name: Deploy to CapRover
-        env:
-          CAPROVER_SERVER_URL: ${{ secrets.CAPROVER_SERVER_URL }}
-          CAPROVER_APP_NAME: ${{ secrets.CAPROVER_APP_NAME }}
-          CAPROVER_APP_TOKEN: ${{ secrets.CAPROVER_APP_TOKEN }}
-        run: |
-          caprover deploy --caproverUrl "$CAPROVER_SERVER_URL" \
-                          --caproverApp "$CAPROVER_APP_NAME" \
-                          --caproverAppToken "$CAPROVER_APP_TOKEN" \
-                          --tarFile ./source.tar.gz
+        uses: caprover/actions-caprover@v1.1.0 # Check for the latest version
+        with:
+          server: '${{ secrets.CAPROVER_SERVER }}'
+          app: '${{ secrets.CAPROVER_APP_NAME }}'
+          token: '${{ secrets.CAPROVER_APP_TOKEN }}'
+          # The action will use the captain-definition from the checked-out repository.

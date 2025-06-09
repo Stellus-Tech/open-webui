@@ -1,4 +1,4 @@
 {
   "schemaVersion": 2,
-  "imageName": "ghcr.io/open-webui/open-webui:main"
+  "dockerfilePath": "./Dockerfile"
 }
